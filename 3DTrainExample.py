@@ -1,7 +1,7 @@
 from __future__ import print_function
 from keras.callbacks import ModelCheckpoint
 from keras.models import Model, load_model
-from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, ConvLSTM2D, LSTM, TimeDistributed
+from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, ConvLSTM2D, LSTM, TimeDistributed, Bidirectional
 from keras.optimizers import Adam
 from keras import losses
 import numpy as np
@@ -49,7 +49,7 @@ for k in range(10):  # 50 means training for 50 epochs
         conv4 = TimeDistributed(Conv2D(256, (3, 3), activation='relu', padding='same'))(conv4)
         pool4 = TimeDistributed(MaxPooling2D(pool_size=(2, 2)))(conv4)
 
-        myLSTM = ConvLSTM2D(512, (3, 3), activation='relu', padding='same', return_sequences=True)(pool4)
+        myLSTM = Bidirectional(ConvLSTM2D(512, (3, 3), activation='relu', padding='same', return_sequences=True))(pool4)
 
         up6 = concatenate([TimeDistributed(UpSampling2D(size=(2, 2)))(myLSTM), conv4], axis=4)
         conv6 = TimeDistributed(Conv2D(256, (3, 3), activation='relu', padding='same'))(up6)

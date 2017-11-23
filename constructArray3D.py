@@ -6,10 +6,10 @@ import scipy
 from scipy import misc
 import math
 
-imageDirectory = '/home/lukemarkham1383/trainEnvironment/augmentedInnerBinary/'
+imageDirectory = '/home/lukemarkham1383/trainEnvironment/augmentedInnerOriginals/'
 arrayDirectory = '/home/lukemarkham1383/trainEnvironment/npArrays/'
 patientID = 'NS'
-imageType = 'Binary'
+imageType = 'Original'
 
 fileList = sorted(os.listdir(imageDirectory))
 imgTotal = len(fileList)
