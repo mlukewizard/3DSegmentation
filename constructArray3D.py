@@ -18,7 +18,7 @@ maxSliceNum = 285
 binNum = 2
 nonAugmentedVersion = False
 
-npImageArray = np.ndarray((binNum*maxSliceNum, 3, 256, 256, 1), dtype='float32')
+npImageArray = np.ndarray((binNum*maxSliceNum, 5, 256, 256, 1), dtype='float32')
 
 print('Loop starting')
 for filename in fileList:
@@ -33,20 +33,64 @@ for filename in fileList:
     #print(image[250,250])
     #plt.imshow(image)
     #plt.show()
-    if sliceNum != 1 and sliceNum != maxSliceNum:
-        npImageArray[arrayIndex, 1, :, :, 0] = image
-        npImageArray[arrayIndex-1, 2, :, :, 0] = image
-        npImageArray[arrayIndex+1, 0, :, :, 0] = image
-    elif sliceNum == 1:
-        npImageArray[arrayIndex, 1, :, :, 0] = image
-        npImageArray[arrayIndex, 0, :, :, 0] = image
-        npImageArray[arrayIndex + 1, 0, :, :, 0] = image
-    elif sliceNum == maxSliceNum:
-        npImageArray[arrayIndex, 1, :, :, 0] = image
+    if sliceNum > 4 and sliceNum < maxSliceNum - 3:
+        #assign to this index
         npImageArray[arrayIndex, 2, :, :, 0] = image
-        npImageArray[arrayIndex-1, 2, :, :, 0] = image
 
-    totalCounter = totalCounter + 1
+        #assign to previous indexes
+        npImageArray[arrayIndex-2, 3, :, :, 0] = image
+        npImageArray[arrayIndex-4, 4, :, :, 0] = image
+
+        #assign to future indexes
+        npImageArray[arrayIndex+2, 1, :, :, 0] = image
+        npImageArray[arrayIndex+4, 0, :, :, 0] = image
+
+    elif sliceNum > 2 and sliceNum < 5: #gets slices 3 and 4
+        #assign to this index
+        npImageArray[arrayIndex, 2, :, :, 0] = image
+        npImageArray[arrayIndex, 1, :, :, 0] = image
+        npImageArray[arrayIndex, 0, :, :, 0] = image #this is done for contingency
+
+        #assign to previous indexes
+        npImageArray[arrayIndex - 2, 3, :, :, 0] = image
+
+        # assign to future indexes
+        npImageArray[arrayIndex + 2, 1, :, :, 0] = image
+        npImageArray[arrayIndex + 4, 0, :, :, 0] = image
+
+    elif sliceNum < 2: #gets slices 1 and 2
+        # assign to this index
+        npImageArray[arrayIndex, 2, :, :, 0] = image
+        npImageArray[arrayIndex, 1, :, :, 0] = image
+        npImageArray[arrayIndex, 0, :, :, 0] = image  # this is necessary
+
+        # assign to future indexes
+        npImageArray[arrayIndex + 2, 1, :, :, 0] = image
+        npImageArray[arrayIndex + 4, 0, :, :, 0] = image
+    elif sliceNum > maxSliceNum - 5 and sliceNum < maxSliceNum - 1: #gets slices which are 3rd and 4th from the end
+        # assign to this index
+        npImageArray[arrayIndex, 2, :, :, 0] = image
+        npImageArray[arrayIndex, 3, :, :, 0] = image
+        npImageArray[arrayIndex, 4, :, :, 0] = image  # this is done for contingency
+
+        # assign to previous indexes
+        npImageArray[arrayIndex - 2, 3, :, :, 0] = image
+        npImageArray[arrayIndex - 4, 4, :, :, 0] = image
+
+        # assign to future indexes
+        npImageArray[arrayIndex + 2, 1, :, :, 0] = image
+
+    elif sliceNum > maxSliceNum - 3: #gets the end and the one before it
+        #assigns to this index
+        npImageArray[arrayIndex, 2, :, :, 0] = image
+        npImageArray[arrayIndex, 3, :, :, 0] = image
+        npImageArray[arrayIndex, 4, :, :, 0] = image #this is needed
+
+        #assigns to prevous indexes
+        npImageArray[arrayIndex - 2, 3, :, :, 0] = image
+        npImageArray[arrayIndex - 4, 4, :, :, 0] = image
+
+        totalCounter = totalCounter + 1
 
     if (augNum%binNum == 0) and (sliceNum == maxSliceNum):
 	print('Saved one at augNum ' + str(augNum))
