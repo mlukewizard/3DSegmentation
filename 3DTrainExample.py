@@ -31,7 +31,7 @@ for k in range(10):  # 50 means training for 50 epochs
     model_list = os.listdir(model_folder)  # Checking if there is an existing model
     if model_list.__len__() == 0:  # Creating a new model if empty
 
-        inputs = Input((3, 256, 256, 1))
+        inputs = Input((5, 256, 256, 1))
 
         conv1 = TimeDistributed(Conv2D(32, (3, 3), activation='relu', padding='same'))(inputs)
         conv1 = TimeDistributed(Conv2D(32, (3, 3), activation='relu', padding='same'))(conv1)
