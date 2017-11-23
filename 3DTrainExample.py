@@ -10,11 +10,11 @@ import h5py
 from keras import optimizers
 
 file_dict = '/home/lukemarkham1383/trainEnvironment/npArrays/'  # Change this
-for k in range(2):  # 50 means training for 50 epochs
-    img_measure_file = '2-5DAugment001-002PatientNS_Original.npy'
-    bm_measure_file = '2-5DAugment001-002PatientNS_Binary.npy'
-    img_measure = np.load(os.path.join(file_dict, img_measure_file))
-    bm_measure = np.load(os.path.join(file_dict, bm_measure_file)) / 255  # Converting to binary
+for k in range(10):  # 50 means training for 50 epochs
+    img_measure_file = '3DAugment001-002PatientNS_Original.npy'
+    bm_measure_file = '3DAugment001-002PatientNS_Binary.npy'
+    img_train = np.load(os.path.join(file_dict, img_measure_file))
+    bm_train = np.load(os.path.join(file_dict, bm_measure_file)) / 255  # Converting to binary
 
     # img_test_file = 'nonAugmentPatientNS_Original.npy'
     # bm_test_file = 'nonAugmentPatientNS_Binary.npy'
@@ -22,16 +22,16 @@ for k in range(2):  # 50 means training for 50 epochs
     # bm_test = np.load(os.path.join(file_dict, bm_test_file)) / 255
 
     # testSplit = img_test.shape[0]/(img_test.shape[0]+img_measure.shape[0])
-    img_train = img_measure
+    #img_train = img_measure
     # np.concatenate((img_measure, img_test))
-    bm_train = bm_measure
+    #bm_train = bm_measure
     # np.concatenate((bm_measure, bm_test))
 
     model_folder = '/home/lukemarkham1383/trainEnvironment/models'  # Change this
     model_list = os.listdir(model_folder)  # Checking if there is an existing model
     if model_list.__len__() == 0:  # Creating a new model if empty
 
-        inputs = Input((285, 256, 256, 1))
+        inputs = Input((3, 256, 256, 1))
 
         conv1 = TimeDistributed(Conv2D(32, (3, 3), activation='relu', padding='same'))(inputs)
         conv1 = TimeDistributed(Conv2D(32, (3, 3), activation='relu', padding='same'))(conv1)
@@ -92,7 +92,6 @@ for k in range(2):  # 50 means training for 50 epochs
         print('Using model number ' + str(epoch_number))
         model.compile(optimizer=Adam(lr=1e-4), loss=losses.binary_crossentropy)
 
-    # epoch_number = epoch_number + 1
     model_check_file = os.path.join(model_folder, 'weights.{epoch:02d}-{loss:.2f}.h5')
 
     model_checkpoint = ModelCheckpoint(model_check_file, monitor='val_loss', save_best_only=False)
@@ -100,6 +99,3 @@ for k in range(2):  # 50 means training for 50 epochs
     history = model.fit(img_train, bm_train, batch_size=8, initial_epoch=epoch_number, epochs=epoch_number + 10,
                         verbose=1, shuffle=True, validation_split=0.5,
                         callbacks=[model_checkpoint])
-    # You can find details about fit on keras website, just a little reminder here: validation_split starts before
-    # shuffle, so don't worry if shuffle would blur both training and validating data. If OOM (out of memory appears),
-    # try to make batch_size smaller.
