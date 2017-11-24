@@ -8,6 +8,17 @@ import numpy as np
 import os
 import h5py
 from keras import optimizers
+from keras import backend as K
+
+
+def my_loss(y_true, y_pred):
+    smooth = 0
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    dice_coeff = (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+    return (-1)*dice_coeff
+#    return K.mean(K.binary_crossentropy(y_true[:,2,:,:,:], y_pred[:,2,:,:,:], axis=-1)
 
 file_dict = '/home/lukemarkham1383/trainEnvironment/npArrays/'  # Change this
 for k in range(10):  # 50 means training for 50 epochs
@@ -70,10 +81,11 @@ for k in range(10):  # 50 means training for 50 epochs
         conv10 = TimeDistributed(Conv2D(1, (1, 1), activation='sigmoid'))(conv9)
 
         model = Model(inputs=[inputs], outputs=[conv10])
-        model.summary()
-        model.compile(optimizer=Adam(lr=1e-4), loss=losses.binary_crossentropy)
-
-        epoch_number = 0
+        #model.summary()
+        #model.compile(optimizer=Adam(lr=1e-4), loss = losses.binary_crossentropy)
+ 	model.compile(optimizer=Adam(lr=1e-4), loss = my_loss)  
+	
+	epoch_number = 0
 
     else:
 
@@ -90,7 +102,7 @@ for k in range(10):  # 50 means training for 50 epochs
         f_model.close()
         model = load_model(os.path.join(model_folder, model_file))
         print('Using model number ' + str(epoch_number))
-        model.compile(optimizer=Adam(lr=1e-4), loss=losses.binary_crossentropy)
+        model.compile(optimizer=Adam(lr=5e-5), loss=losses.binary_crossentropy)
 
     model_check_file = os.path.join(model_folder, 'weights.{epoch:02d}-{loss:.2f}.h5')
 
