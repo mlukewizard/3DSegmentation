@@ -1,7 +1,7 @@
 from __future__ import print_function
 from keras.callbacks import ModelCheckpoint
 from keras.models import Model, load_model
-from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, ConvLSTM2D, LSTM, TimeDistributed, Bidirectional
+from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, ConvLSTM2D, LSTM, TimeDistributed, Bidirectional, Dropout, BatchNormalization
 from keras.optimizers import Adam
 from keras import losses
 import numpy as np
@@ -125,13 +125,14 @@ for k in range(10):  # 50 means training for 50 epochs
         f_model.close()
         model = load_model(os.path.join(model_folder, model_file))
         print('Using model number ' + str(epoch_number))
-
+	
+    model.summary()
     model.compile(optimizer=Adam(lr=1e-4), loss=my_loss)
 
     model_check_file = os.path.join(model_folder, 'weights.{epoch:02d}-{loss:.2f}.h5')
 
     model_checkpoint = ModelCheckpoint(model_check_file, monitor='val_loss', save_best_only=False)
 
-    history = model.fit(img_train, bm_train, batch_size=8, initial_epoch=epoch_number, epochs=epoch_number + 10,
+    history = model.fit(img_train, bm_train, batch_size=4, initial_epoch=epoch_number, epochs=epoch_number + 10,
                         verbose=1, shuffle=True, validation_split=0.5,
                         callbacks=[model_checkpoint])
